@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+
+<form action="" method="POST" class="form">
+  
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+    
+
+  <ul>
+      <li>
+        <label for="username">Username</label>
+        <input type="text" name="username" value="{{ request.form['username'] }}">
+      </li>
+      <li>
+        <label for="password">Password</label>
+        <input type="password" name="password" value="{{ request.form['password'] }}">
+      </li>
+      <li>
+      <div class="form-control">
+        <label for="sel1">Select Login Type</label>
+        <select name="login_type" class="form-control" id="sel1">
+          <option>User</option>
+          <option>Owner</option>
+          <option>Admin</option>
+        </select>
+      </div>
+    </li>
+
+      <li>
+          <button type="submit">Login</button>
+      </li>
+  </ul>
+  <span class="or">don't have an account?</span>
+  <a href="{{ url_for('register_page') }}" class="form-url">Register Now!</a>
+</form>
+{% endblock %}

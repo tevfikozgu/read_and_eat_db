@@ -1,0 +1,135 @@
+{% extends "layout.html" %}
+{% block title %}My Restaurant Details{% endblock %}
+{% block styleHeaders %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>{% endblock %}
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+{% block content %}
+
+<!-- Page Content -->
+{% if restaurant_details %}
+<div class="container">
+    <h1 class="title" style="text-align: center;">{{restaurant_details["Name"]}}</h1> <br>
+    <ul class="nav nav-pills nav-justified">
+      <li class="active"><a data-toggle="pill" href="#home">Restaurant Details</a></li>
+      <li><a data-toggle="pill" href="#menu1">Demands</a></li>
+      <li><a data-toggle="pill" href="#menu2">Restaurant Comments</a></li>
+    </ul>
+    <hr>
+    
+    <div class="tab-content">
+      <div id="home" class="tab-pane fade in active">
+
+        <div class="container">
+          <div class="list-group">
+              <li class="list-group-item">
+              <h4 class="list-group-item-heading">Restaurant Name</h4>
+              <p class="list-group-item-text">{{restaurant_details["Name"]}}</p>
+              <hr> 
+              <h4 class="list-group-item-heading">City/District</h4>
+              <p class="list-group-item-text">{{restaurant_details['City']+'/'+ restaurant_details['District']}}</p>
+              <hr>
+              <h4 class="list-group-item-heading">Address</h4>
+              <p class="list-group-item-text">{{restaurant_details["Address"]}}</p>
+              <hr>
+              <h4 class="list-group-item-heading">Average Vote</h4>
+              <p class="list-group-item-text">{{vote_avg }} ({{score_name}})
+              <p class="list-group-item-text">Total Vote: {{vote_count}}</p>
+              </li>
+              
+            </div>
+            <form action="" method="POST"> 
+                <button type="submit" formmethod="post" class="btn btn-success btn-lg" name="edit_restaurant" value="edit_restaurant">Edit Restaurant</button>
+             </form>
+            </div>
+            
+        </div>
+
+      <div id="menu1" class="tab-pane fade">
+        <div class="container">
+          
+            <div class="list-group">
+                {%if demands%}
+                    <li class="list-group-item">
+                
+                    {% for demand in demands %}
+                        <h4 class="list-group-item-heading">{{demand['Name_Surname']}}&nbsp &nbsp &nbsp <small>{{demand["Demand_Time"].strftime('%d-%m-%Y')}}</small> </h4>
+                        
+                        <p class="list-group-item-text">{{demand['Demand']}}</p>
+                        <hr>
+                    {% endfor %}
+                    </li>
+
+                {% else %}
+
+                  <div class="alert alert-info">
+                    <strong>Oops!</strong> There is no demand that is wanted from your restaurant.
+                  </div>
+            
+                {% endif %}
+              </div>
+          
+        </div>
+    </div>
+
+
+      <div id="menu2" class="tab-pane fade">
+        <div class="container">
+          
+            <div class="container">
+                {%if resturant_comments%}
+                  {% for comment in resturant_comments %}
+                  
+                    <div class="col-sm-5">
+                    <div class="panel panel-default">
+                    <div class="panel-heading">
+                    <strong>{{comment["Name_Surname"]}} &emsp;</strong> <span class="text-muted">{{comment["Comment_Time"].strftime('%d-%m-%Y')}}</span> &emsp;
+                    </div>
+                    <div id="footer" class="panel-body">
+                      
+                      <textarea rows="3" cols="75">{{comment["Comment"]}}</textarea>
+                      
+                    </div><!-- /panel-body -->
+                    </div><!-- /panel panel-default -->
+                    </div><!-- /col-sm-5 -->
+                  
+                  {% endfor %}
+      
+                {%else%}
+                <div class="alert alert-info">
+                  <strong>Oops!</strong> There is no comment that is written to your restaurant.
+                </div>
+                {%endif%}
+                
+            </div>
+        </div>
+
+      
+    </div>
+  </div>
+  {% else %}
+
+    <div class="alert alert-info">
+      <strong>Oops!</strong> Some problems occured while getting your details.
+    </div>
+
+  {% endif %}
+  {% endblock %}

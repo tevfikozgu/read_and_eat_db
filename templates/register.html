@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+
+<form action="" method="POST" class="form">
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <ul>
+        <li>
+            <label for="Name_Surname">Name Surname</label>
+            <input type="text" id="Name_Surname" name="Name_Surname" value="{{ request.form['Name_Surname'] }}">
+        </li>
+        <li>
+            <label for="Username">Username</label>
+            <input type="text" id="Username" name="Username" value="{{ request.form['Username'] }}">
+        </li>
+        <li>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" value="{{ request.form['password'] }}">
+        </li>
+        <li>
+            <label for="repassword">Password (Again)</label>
+            <input type="password" id="repassword" name="re_password" value="{{ request.form['re_password'] }}">
+        </li>
+        <li>
+            <button type="submit">Register</button>
+        </li>
+    </ul>
+    <span class="or">have an account?</span>
+    <a href="{{ url_for('login_page') }}" class="form-url">Login!</a>
+</form>
+{% endblock %}

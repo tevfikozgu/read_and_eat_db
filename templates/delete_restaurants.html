@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block title %}Delete Restaurant{% endblock %}
+{% block styleHeaders %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+{% endblock %}
+{% block content %}
+{% if restaurants %}
+<form action="" method="POST" name="restaurant_list">
+    <table class="table table-hover" id="cssTable">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Restaurant Name</th>
+            <th scope="col">Restaurant Owner</th>
+            <th scope="col">Location</th>
+        </tr>
+        </thead>
+
+        {% for restaurant in restaurants %}
+        <tbody>
+        <tr>
+            <td>
+                <input type="checkbox" name="restaurant_keys" value="{{ restaurant['Restaurant_ID'] }}"/>
+            </label>
+            </td>
+            <td>{{ restaurant['Name'] }}</td>
+            <td>{{ restaurant['Owner_Name'] }}</td>
+            <td>{{ restaurant['City']+'/'+ restaurant['District']}}</td>
+        </tr>
+        </tbody>
+    {% endfor %}
+
+    </table>
+
+
+  <div class="field is-grouped">
+    <div class="control">
+        <button class="btn btn-warning">Delete Restaurant(s)</button>
+    </div>
+  </div>
+
+</form>
+{% endif %}
+{% endblock %}

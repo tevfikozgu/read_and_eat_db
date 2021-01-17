@@ -1,0 +1,212 @@
+{% extends "layout.html" %}
+{% block title %}Food Details{% endblock %}
+{% block styleHeaders %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+{% endblock %}
+{% block content %}
+
+<!-- Page Content -->
+{% if food_details %}
+<div class="container">
+    <h1 class="title" style="text-align: center;">{{food_details["Name"] }} / {{food_details["Food_Name"]}}</h1> <br>
+    <ul class="nav nav-pills nav-justified">
+      <li class="active"><a data-toggle="pill" href="#home">Food Details</a></li>
+      <li><a data-toggle="pill" href="#vote">Vote Food</a></li>
+      <li><a data-toggle="pill" href="#menu2">Food Comments</a></li>
+    </ul>
+    <hr>
+
+    <div class="tab-content">
+      
+      <div id="home" class="tab-pane fade in active">
+        <div class="container">
+          <div class="list-group">
+            <li class="list-group-item">
+            <h4 class="list-group-item-heading">Food Name</h4>
+            <p class="list-group-item-text">{{food_details["Food_Name"]}}</p>
+            <hr>
+            <h4 class="list-group-item-heading">Price</h4>
+            <p class="list-group-item-text">{{food_details["Price"]}} TL</p>
+            <hr>
+            <h4 class="list-group-item-heading">Average Vote</h4>
+            <p class="list-group-item-text">{{vote_avg }} ({{score_name}})</p>
+            <p class="list-group-item-text">Total Vote: {{vote_count}}</p>
+            <hr>
+            <h4 class="list-group-item-heading">Restaurant Name</h4>
+            <p class="list-group-item-text">{{food_details["Name"]}}</p>
+            </li>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div id="menu2" class="tab-pane fade">
+
+        <div class="container">
+          {%if food_comments%}
+          {% for comment in food_comments %}
+          <form action="" method="POST">
+            <div class="col-sm-5">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <strong>{{comment["Name_Surname"]}} &emsp;</strong> <span class="text-muted">{{comment["Comment_Time"].strftime('%d-%m-%Y')}}</span>
+                  {% if comment['Sender_ID'] == session['user_id'] %}
+             
+                    <button type="submit" formmethod="post" class=" btn btn-warning btn-sm float-right" name="edit_comment" value="{{comment['Comment_ID']}}">Edit Comment</button>
+            
+                  {% endif %}
+                </div>
+                <div id="footer" class="panel-body">
+                  <textarea rows="3" cols="75">{{comment["Comment"]}}</textarea>
+                </div><!-- /panel-body -->
+              </div><!-- /panel panel-default -->
+            </div><!-- /col-sm-5 -->
+            </form>
+          {% endfor %}
+
+          {%else%}
+          <div class="alert alert-info">
+            <strong>Oops!</strong> There is no comment belongs to  {{food_details["Food_Name"]}} of {{food_details["Name"] }}. You can be the first that commented by using below section.
+          </div>
+          {%endif%}
+        </div>
+
+        <form action="" method="POST">
+          <div class="container">
+            <li class="list-group-item">
+              <h2>Comment</h2>
+              <p>You can post comment about this restaurant if you wish!</p>
+              <div class="form-group">
+                <label for="comment">Comment:</label>
+                <textarea class="form-control" rows="5" id="comment" name="comment"></textarea>
+              </div>
+              <button type="submit" formmethod="post" class="btn btn-primary btn-lg" name="send_comment" value="send_comment_clicked">Send Comment</button>
+            </li>
+          </div>
+        </form>
+      </div>
+      <div id="vote" class="tab-pane fade">
+        <form action="" method="POST">
+        <div class="container">
+          <div class="row">
+                  <div class="panel panel-primary">
+                      <div class="panel-heading">
+                          <h3 style="color:rgb(252, 252, 252)" class="panel-title">
+                              Vote This Food
+                          </h3>
+                      </div>
+                      <div class="panel-body">
+                          <ul class="list-group">
+                              <li class="list-group-item" style = "margin-right: 15px">
+                                  <div class="radio">
+                                      <label>
+                                        {% if vote_info['Vote'] == 5 %}
+                                        <input type="radio" name="optionsRadios" value="5" checked> 5 (Excellent)
+  
+                                        {% else %}
+                                          <input type="radio" name="optionsRadios" value="5">
+                                          5 (Excellent)
+                                        {% endif %}
+                                      </label>
+                                  </div>
+                              </li>
+                              
+                            </li>
+                              <li class="list-group-item" style = "margin-right: 15px">
+                                <div class="radio">
+                                    <label>
+                                      {% if vote_info['Vote'] == 4 %}
+                                      <input type="radio" name="optionsRadios" value="4" checked> 4 (Good)
+
+                                      {% else %}
+                                        <input type="radio" name="optionsRadios" value="4">
+                                        4 (Good)
+                                      {% endif %}
+                                    </label>
+                                </div>
+                            </li>
+                            <li class="list-group-item" style = "margin-right: 15px">
+                              <div class="radio">
+                                  <label>
+                                    {% if vote_info['Vote'] == 3 %}
+                                    <input type="radio" name="optionsRadios" value="3" checked> 3 (Can be Improved)
+
+                                    {% else %}
+                                      <input type="radio" name="optionsRadios" value="3">
+                                      3 (Can be Improved)
+                                    {% endif %}
+                                  </label>
+                              </div>
+                          </li>
+                              <li class="list-group-item" style = "margin-right: 15px">
+                                <div class="radio">
+                                    <label>
+                                      {% if vote_info['Vote'] == 2 %}
+                                      <input type="radio" name="optionsRadios" value="2" checked> 2 (Bad)
+
+                                      {% else %}
+                                        <input type="radio" name="optionsRadios" value="2">
+                                        2 (Bad)
+                                      {% endif %}
+                                    </label>
+                                </div>
+                            </li>
+                              <li class="list-group-item" style = "margin-right: 15px">
+                                <div class="radio" >
+                                    <label>
+                                      {% if vote_info['Vote'] == 1 %}
+                                      <input type="radio" name="optionsRadios" value="1" checked> 1 (Very Bad)
+
+                                      {% else %}
+                                        <input type="radio" name="optionsRadios" value="1">
+                                        1 (Very Bad)
+                                      {% endif %}
+                                    </label>
+                                </div>
+                            </li>
+                            <br>
+                          </ul>
+                      </div>
+                      <div class="panel-footer">
+                        {%if vote_info %}
+                        <button name="vote_button" type="submit" class="btn btn-primary btn-sm">Update Vote</button>
+                        <button type="submit" formmethod="post" class=" btn btn-warning btn-sm float-right" name="delete_vote">Delete Vote</button>
+                          {% else %}
+                          <button name="vote_button" type="submit" class="btn btn-primary btn-sm">
+                            Vote</button>
+                          {% endif %}
+                  </div>
+              </div>
+          </div>
+        </form>
+        
+      </div>
+
+
+    </div>
+</div>
+
+  {% endif %}
+
+  {% endblock %}
+
+
+  

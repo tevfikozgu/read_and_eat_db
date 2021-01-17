@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block title %}Edit Comment{% endblock %}
+
+{% block content %}
+
+<form action="" method="post" class="form">
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+{%if comment %}
+    <ul>
+
+        <li>
+            <label for="Comment">Comment</label>
+            <input type="text" id="Comment" name="Comment" value="{{comment['Comment']}}">
+        </li>
+        <li>
+            <button type="submit" name="submit_button" class="btn btn-success" value = "edit_comment">Update Comment</button>
+            <br><br>
+            <button type="submit" name="submit_button" class="btn btn-danger" value="delete_comment">Delete Comment</button>
+        </li>
+    </ul>
+{% endif %}
+</form>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block title %}Restaurants{% endblock %}
+{% block styleHeaders %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+{% endblock %}
+{% block content %}
+
+    <div class="container">
+
+      <h1 class="title">Restaurants</h1>
+      <br>
+      <div class="list-group">
+        {%if restaurants%}
+          {% for restaurant in restaurants %}
+
+                <a href="{{ url_for('restaurant_detail_page', restaurant_key=restaurant['Restaurant_ID'])}}" class="list-group-item">
+                  <h4 class="list-group-item-heading">{{ restaurant['Name'] }}</h4>
+                  <p class="list-group-item-text">{{ restaurant['City']+'/'+ restaurant['District']}}</p>
+                </a>
+
+          {% endfor %}
+        {% else %}
+        <div class="alert alert-danger">
+          <strong> Sorry!</strong> There is no Restaurant in the system. If you have a restaurant you can contact with us.
+        </div>
+        {%endif%}
+        
+      </div>
+    </div>
+
+{% endblock %}

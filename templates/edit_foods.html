@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block title %}Edit Foods{% endblock %}
+{% block styleHeaders %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+{% endblock %}
+{% block content %}
+<h1>Edit Foods</h1>
+
+{% if restaurant_foods %}
+    <table id="cssTable" class="table table-hover table-bordered"> 
+        <thead>
+        <tr>
+            <th scope="col">Food Name</th>
+            <th scope="col">Food Price</th>
+            <th scope="col">Average Vote</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
+
+        </tr>
+        </thead>
+        
+            {% for food in restaurant_foods %}
+                <tbody>
+                <tr>
+                    
+                    <td>{{ food['Food_Name'] }}</td>
+                    <td>{{ food['Price'] }} TL</td>
+                    {%if food['SUM(Vote)'] %}
+                        <td>{{ food['SUM(Vote)']/food['COUNT(Sender_ID)']}}/5</td>
+                    {%else%}
+                        <td>Not Voted</td>
+                    {% endif %}
+                    <td>
+                    <form action="" method="post" name="food_detail">
+                        <button name="update_food" type="submit" class="btn btn-success" value = "{{food['Food_ID']}}">Edit Food</button>
+                    </form>
+                    </td>
+                    <td>
+                        <form action="" method="POST" name="deleting_food">
+                            <button name="delete_food" type="submit" class="btn btn-danger" value = "{{food['Food_ID']}}">Delete Food</button>
+                        </form>
+                </td>
+                </tr>
+                </tbody>
+            {% endfor %}
+    </table>
+    {%else%}
+                
+    <div class="alert alert-danger">
+      <strong>Oops!</strong> There is no menu belongs to your restaurant. Please Add!
+    </div>
+
+  {% endif %}
+
+{% endblock %}

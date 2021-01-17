@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+
+<form action="" method="POST" class="form">
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <ul>
+
+        <li>
+            <label for="Username">Username</label>
+            <input type="text" id="Username" name="Username" value="{{session['username']}}">
+        </li>
+
+        <li>
+            <label for="Name_Surname">Name Surname</label>
+            <input type="text" id="Name_Surname" name="Name_Surname" value="{{session['name_surname']}}">
+        </li>
+        <li>
+            <button type="submit">Update Profile</button>
+        </li>
+    </ul>
+</form>
+{% endblock %}
