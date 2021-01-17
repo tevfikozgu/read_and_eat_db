@@ -4,10 +4,13 @@ import mysql.connector
 
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="firstpassword123",
-  database = "Restaurant_App_DB"
+
+  host="hwr4wkxs079mtb19.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+  user="rfabp6xkkpmc6lkv",
+  password="jaaefkttt1a0lo10",
+  database = "vhvllv9pn37u5nr1",
+  ssl_disabled=True,
+
 )
 
 mycursor = mydb.cursor(dictionary=True)
