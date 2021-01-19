@@ -1,8 +1,6 @@
 from flask import Flask, session
 import views
 from flask_login import LoginManager
-import user
-import restuarant_owner
 import mysql.connector
 import dbinit
 

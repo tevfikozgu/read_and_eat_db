@@ -1,10 +1,7 @@
 from datetime import datetime
 from flask import render_template, current_app,abort, request, redirect, url_for, flash, session
 import mysql.connector
-from forms import LoginForm
 from flask_login import login_user, logout_user
-import user
-import restuarant_owner
 from passlib.hash import pbkdf2_sha256 as hasher
 import hashlib
 from functools import wraps
@@ -45,11 +42,9 @@ def login_required_owner(f):
         if 'user_type' in session:
             if session['user_type'] == 'owner':
                 return f(*args,**kwargs)
-            else:  #eğer sayfayı görmek istiyorsan giriş yap
-                #flash("Please User login","danger")
+            else:  
                 return redirect(url_for("home_page"))
-        else:  #eğer sayfayı görmek istiyorsan giriş yap
-            #flash("Please Login","danger")
+        else:  
             return redirect(url_for("login_page"))
     return decorated_function
 
@@ -59,11 +54,9 @@ def login_required_admin(f):
         if 'user_type' in session:
             if session['user_type'] == 'admin':
                 return f(*args,**kwargs)
-            else:  #eğer sayfayı görmek istiyorsan giriş yap
-                #flash("Please User login","danger")
+            else:  
                 return redirect(url_for("home_page"))
-        else:  #eğer sayfayı görmek istiyorsan giriş yap
-            #error = "Please Login","danger"
+        else:  
             return redirect(url_for("login_page"))
     return decorated_function
 
@@ -73,11 +66,9 @@ def login_required_user(f):
         if 'user_type' in session:
             if session['user_type'] == 'user':
                 return f(*args,**kwargs)
-            else:  #eğer sayfayı görmek istiyorsan giriş yap
-                #flash("Please User login","danger")
+            else:
                 return redirect(url_for("home_page"))
-        else:  #eğer sayfayı görmek istiyorsan giriş yap
-            #flash("Please Login","danger")
+        else:
             return redirect(url_for("login_page"))
     return decorated_function
 
@@ -133,12 +124,13 @@ def restaurant_detail_page(restaurant_key):
     if request.method == 'POST':
         if "send_comment" in request.form:
             if request.form["send_comment"] == "send_comment_clicked":
-                try:
-                    sql = "INSERT INTO Comments SET Restaurant_ID = %s, Comment = %s, Sender_ID = %s"
-                    mycursor.execute(sql, (restaurant_key, request.form["comment"], session['user_id']))
-                    mydb.commit()
-                except:
-                    mycursor.rollback()
+                if request.form["comment"] !=  '' and request.form["comment"].strip() != '':
+                    try:
+                        sql = "INSERT INTO Comments SET Restaurant_ID = %s, Comment = %s, Sender_ID = %s"
+                        mycursor.execute(sql, (restaurant_key, request.form["comment"], session['user_id']))
+                        mydb.commit()
+                    except:
+                        mycursor.rollback()
         elif "edit_comment" in request.form:
             return redirect(url_for('edit_restaurant_comment',comment_key = request.form['edit_comment'], restaurant_key_comment = restaurant_key))
         elif "delete_vote" in request.form:
@@ -228,9 +220,7 @@ def restaurant_detail_page(restaurant_key):
 def restaurant_detail_owner():
     if request.method == 'POST':
         return redirect(url_for('update_restaurant_info'))
-    
     try:
-
         restaurant_detail_fetch = '''SELECT * FROM Restaurant
                                     WHERE Restaurant_ID = %s
                                     '''
@@ -283,12 +273,13 @@ def food_detail_page(restaurant_key,food_key):
     if request.method == 'POST':
         if "send_comment" in request.form:
             if request.form["send_comment"] == "send_comment_clicked":
-                try:
-                    sql = "INSERT INTO Comments SET Food_ID = %s, Comment = %s, Sender_ID = %s"
-                    mycursor.execute(sql, (food_key, request.form["comment"], session['user_id']))
-                    mydb.commit()
-                except:
-                    mydb.rollback()
+                if request.form["comment"] !=  '' and request.form["comment"].strip() != '':
+                    try:
+                        sql = "INSERT INTO Comments SET Food_ID = %s, Comment = %s, Sender_ID = %s"
+                        mycursor.execute(sql, (food_key, request.form["comment"], session['user_id']))
+                        mydb.commit()
+                    except:
+                        mydb.rollback()
         elif "edit_comment" in request.form:
             return redirect(url_for('edit_food_comment',comment_key = request.form['edit_comment'], food_key_comment = food_key, restaurant_key_comment = restaurant_key))
         elif "delete_vote" in request.form:
@@ -513,6 +504,15 @@ def register_page():
             error = 'Passwords do not match'
         elif hasUser(request.form['Username']):
             error = 'There is a user with this username'
+        elif ' ' in (request.form['Username']):
+            error = 'There cannot be space in your username'
+        elif ' ' in request.form['password']:
+            error = 'There cannot be space in your password'
+        elif len(request.form['Username']) < 6:
+            error = 'Type username longer than 5 char'
+        elif len(request.form['password']) < 6:
+            error = 'Type password longer than 5 char'
+
         else:
             try:
                 sql = "INSERT INTO User SET Name_Surname = %s, Username = %s, Password = %s"
@@ -550,6 +550,14 @@ def new_restaurant_page():
             error = 'Write District'
         elif request.form['Address'] == '':
             error = 'Write Address!'
+        elif ' ' in (request.form['Username']):
+            error = 'There cannot be space in your username'
+        elif ' ' in request.form['password']:
+            error = 'There cannot be space in your password'
+        elif len(request.form['Username']) < 6:
+            error = 'Type username longer than 5 char'
+        elif len(request.form['password']) < 6:
+            error = 'Type password longer than 5 char'
         
         else:
             try:
@@ -582,8 +590,11 @@ def edit_password():
             error = 'This password is wrong'
         elif request.form['New_Password'] != request.form['New_Password_Again']:
             error = 'Passwords are not same'
+        elif ' ' in request.form['New_Password']:
+            error = 'There cannot be space in your password'
+        elif len(request.form['New_Password']) < 6:
+            error = 'Type password longer than 5 char'
         else:
-
             password_new = md5(request.form["New_Password"])
             try:
                 query = """ \
@@ -610,6 +621,10 @@ def update_profile():
             error = 'Type Name Surname'
         elif hasUser(request.form['Username']) and request.form['Username'] != session['username']:
             error = 'This username is used'
+        elif ' ' in (request.form['Username']):
+            error = 'There cannot be space in your username'
+        elif len(request.form['Username']) < 6:
+            error = 'Type username longer than 5 char'
         else:
             try:
                 query = """ \
@@ -704,27 +719,37 @@ def edit_food_comment(comment_key,food_key_comment,restaurant_key_comment):
     if request.method == 'POST':
         if request.form['Comment'] == '':
             error = 'Please Write Comment'
-        
+    
         else:
-            if request.form['submit_button'] == 'edit_comment':
-                query = """ \
-                        UPDATE Comments \
-                        SET Comment = %s \
-                        WHERE Comment_ID= %s AND\
-                        Food_ID = %s
-                     """
-                mycursor.execute(query, (request.form['Comment'],comment_key,food_key_comment))
-                
-            elif request.form['submit_button'] == 'delete_comment':
-                query = "DELETE FROM Comments WHERE Comment_ID = %s AND Food_ID = %s"
-                mycursor.execute(query, (comment_key,food_key_comment,))
-            mydb.commit()
-            return redirect(url_for('food_detail_page',restaurant_key=restaurant_key_comment,food_key = food_key_comment))
+            try:
+                if request.form['submit_button'] == 'edit_comment':
+                    query = """ \
+                            UPDATE Comments \
+                            SET Comment = %s \
+                            WHERE Comment_ID= %s AND\
+                            Food_ID = %s
+                        """
+                    mycursor.execute(query, (request.form['Comment'],comment_key,food_key_comment))
+                    
+                elif request.form['submit_button'] == 'delete_comment':
+                    query = "DELETE FROM Comments WHERE Comment_ID = %s AND Food_ID = %s"
+                    mycursor.execute(query, (comment_key,food_key_comment,))
+                mydb.commit()
+                return redirect(url_for('food_detail_page',restaurant_key=restaurant_key_comment,food_key = food_key_comment))
+            except:
+                error = 'ERROR OCCURED!'
+                mydb.rollback()
+                return render_template('edit_comment.html', error=error)
 
-    sql = "SELECT * FROM Comments WHERE Comment_ID = %s AND Food_ID = %s "
-    mycursor.execute(sql, (comment_key, food_key_comment,))
-    comment = mycursor.fetchone()
-    return render_template('edit_comment.html',comment=comment, error=error)
+    try:
+        sql = "SELECT * FROM Comments WHERE Comment_ID = %s AND Food_ID = %s "
+        mycursor.execute(sql, (comment_key, food_key_comment,))
+        comment = mycursor.fetchone()
+        return render_template('edit_comment.html',comment=comment, error=error)
+    except:
+        error = 'ERROR OCCURED!'
+        mydb.rollback()
+        return render_template('edit_comment.html', error=error)
 
 @login_required_owner
 def update_food(food_key):
@@ -735,22 +760,31 @@ def update_food(food_key):
         elif request.form['Price'] == '':
             error = 'Type Price'
         else:
-            query = """ \
-                        UPDATE Food \
-                        SET Food_Name = %s, \
-                        Price = %s \
-                        WHERE Food_ID = %s 
-                        AND Restaurant_ID = %s\
-                     """
-            mycursor.execute(query, (request.form['Food_Name'],request.form['Price'],food_key,session['user_id']))
-            mydb.commit()
-            
-            return redirect(url_for('edit_foods_page'))
-
-    sql = "SELECT * FROM Food WHERE Food_ID = %s AND Restaurant_ID = %s"
-    mycursor.execute(sql, (food_key, session['user_id'],))
-    food = mycursor.fetchone()
-    return render_template('update_food.html',food=food, error=error)
+            try:
+                query = """ \
+                            UPDATE Food \
+                            SET Food_Name = %s, \
+                            Price = %s \
+                            WHERE Food_ID = %s 
+                            AND Restaurant_ID = %s\
+                        """
+                mycursor.execute(query, (request.form['Food_Name'],request.form['Price'],food_key,session['user_id']))
+                mydb.commit()
+                
+                return redirect(url_for('edit_foods_page'))
+            except:
+                error = 'ERROR OCCURED!'
+                mydb.rollback()
+                return render_template('update_food.html', error=error)
+    try:
+        sql = "SELECT * FROM Food WHERE Food_ID = %s AND Restaurant_ID = %s"
+        mycursor.execute(sql, (food_key, session['user_id'],))
+        food = mycursor.fetchone()
+        return render_template('update_food.html',food=food, error=error)
+    except:
+        error = 'ERROR OCCURED!'
+        mydb.rollback()
+        return render_template('update_food.html', error=error)
 
 def logout_page():
     session.clear()
@@ -758,31 +792,46 @@ def logout_page():
 
 
 def has_this_food(foodname, restaurant_ID):
-    sql = "SELECT Food_ID FROM Food WHERE Food_Name = %s and Restaurant_ID = %s "
-    mycursor.execute(sql, (foodname, restaurant_ID,))
-    post = mycursor.fetchone()
-    return post
+    try:
+        sql = "SELECT Food_ID FROM Food WHERE Food_Name = %s and Restaurant_ID = %s "
+        mycursor.execute(sql, (foodname, restaurant_ID,))
+        post = mycursor.fetchone()
+        return post
+    except:
+        return None
 
 def hasUser(username):
-    sql = "SELECT User_ID FROM User WHERE Username = %s"
-    mycursor.execute(sql, (username,))
-    post = mycursor.fetchone()
-    return post
+    try:
+        sql = "SELECT User_ID FROM User WHERE Username = %s"
+        mycursor.execute(sql, (username,))
+        post = mycursor.fetchone()
+        return post
+    except:
+        return None
 
 def hasRestaurantUser(username):
-    sql = "SELECT Owner_Username FROM Restaurant WHERE Owner_Username = %s"
-    mycursor.execute(sql, (username,))
-    post = mycursor.fetchone()
-    return post
+    try:
+        sql = "SELECT Owner_Username FROM Restaurant WHERE Owner_Username = %s"
+        mycursor.execute(sql, (username,))
+        post = mycursor.fetchone()
+        return post
+    except:
+        return None
 
 def hasVoteRestaurant(Restaurant_ID):
-    sql = "SELECT Vote FROM Votes WHERE Restaurant_ID = %s AND Sender_ID = %s"
-    mycursor.execute(sql, (Restaurant_ID,session['user_id'],))
-    post = mycursor.fetchone()
-    return post
+    try:
+        sql = "SELECT Vote FROM Votes WHERE Restaurant_ID = %s AND Sender_ID = %s"
+        mycursor.execute(sql, (Restaurant_ID,session['user_id'],))
+        post = mycursor.fetchone()
+        return post
+    except:
+        return None
 
 def hasVoteFood(Food_ID):
-    sql = "SELECT Vote FROM Votes WHERE Food_ID = %s AND Sender_ID = %s"
-    mycursor.execute(sql, (Food_ID,session['user_id'],))
-    post = mycursor.fetchone()
-    return post
+    try:
+        sql = "SELECT Vote FROM Votes WHERE Food_ID = %s AND Sender_ID = %s"
+        mycursor.execute(sql, (Food_ID,session['user_id'],))
+        post = mycursor.fetchone()
+        return post
+    except:
+        return None
