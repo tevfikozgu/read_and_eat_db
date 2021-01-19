@@ -3,8 +3,6 @@ import views
 from flask_login import LoginManager
 import mysql.connector
 import dbinit
-#deneme
-
 
 def create_app():
 
