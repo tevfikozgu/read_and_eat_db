@@ -362,6 +362,7 @@ def add_food_page():
             error = 'There is a Food with this name in your restaurant'
         else:
             try:
+                print(request.form['Price'])
                 sql = "INSERT INTO Food SET Food_Name = %s, Restaurant_ID = %s, Price = %s"
                 mycursor.execute(sql, (request.form['Food_Name'], session['user_id'], request.form['Price']))
                 mydb.commit()
@@ -370,6 +371,7 @@ def add_food_page():
                 else:
                     error = 'There is a technical problem!'
             except:
+                mydb.rollback()
                 error = 'There is a technical problem!'
 
     return render_template("add_food.html", error=error)
