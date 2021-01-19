@@ -1,8 +1,6 @@
 from datetime import datetime
 from flask import render_template, current_app,abort, request, redirect, url_for, flash, session
 import mysql.connector
-from flask_login import login_user, logout_user
-from passlib.hash import pbkdf2_sha256 as hasher
 import hashlib
 from functools import wraps
 import math
@@ -78,9 +76,6 @@ def md5(string):
 def home_page():
     return render_template("home.html")
 
-def search_page():
-    return render_template("search.html")
-
 @login_required_owner
 def edit_foods_page():
     if request.method == "POST":
@@ -93,7 +88,6 @@ def edit_foods_page():
                 mycursor.rollback()
         else:
             return redirect(url_for('update_food',food_key = request.form['update_food']))
-        
     try:
         restaurant_foods_fetch = """ 
                                     SELECT SUM(Vote),COUNT(Sender_ID), Food.Food_ID,Price,Food.Food_Name FROM Food 

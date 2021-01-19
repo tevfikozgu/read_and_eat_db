@@ -3,6 +3,7 @@ import views
 from flask_login import LoginManager
 import mysql.connector
 import dbinit
+#deneme
 
 
 def create_app():
@@ -15,7 +16,6 @@ def create_app():
     app.add_url_rule("/restaurants", view_func=views.restaurants_page, methods=["GET", "POST"])
     app.add_url_rule("/restaurants/<int:restaurant_key>", view_func=views.restaurant_detail_page, methods=["GET", "POST"])
     app.add_url_rule("/restaurants/<int:restaurant_key>/<int:food_key>", view_func=views.food_detail_page, methods=["GET", "POST"])
-    app.add_url_rule("/search", view_func=views.search_page)
     app.add_url_rule("/about", view_func=views.about_page, methods=["GET", "POST"])
     app.add_url_rule(
         "/login", view_func=views.login_page, methods=["GET", "POST"]
