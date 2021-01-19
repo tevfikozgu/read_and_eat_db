@@ -96,10 +96,11 @@ def edit_foods_page():
                                 """
         mycursor.execute(restaurant_foods_fetch,(session['user_id'],))
         restaurant_foods = mycursor.fetchall()
+        return render_template("edit_foods.html", restaurant_foods=restaurant_foods)
     except:
         mycursor.rollback()
-    return render_template("edit_foods.html", restaurant_foods=restaurant_foods)
-
+        return render_template("edit_foods.html")
+    
 @login_required_user
 def restaurants_page():
     try:
@@ -108,10 +109,11 @@ def restaurants_page():
                         '''
         mycursor.execute(restaurantFetch,)
         restaurants = mycursor.fetchall()
+        return render_template("restaurants.html", restaurants=restaurants)
     except:
         mydb.rollback()
-    return render_template("restaurants.html", restaurants=restaurants)
-
+        return render_template("restaurants.html")
+    
 @login_required_user
 def restaurant_detail_page(restaurant_key):
     vote_info = hasVoteRestaurant(restaurant_key)
@@ -140,7 +142,6 @@ def restaurant_detail_page(restaurant_key):
                 except:
                     mycursor.rollback()   
         else:
-
             if "optionsRadios" in request.form:
                 vote = int(request.form["optionsRadios"])
                 try:
@@ -362,7 +363,6 @@ def add_food_page():
             error = 'There is a Food with this name in your restaurant'
         else:
             try:
-                print(request.form['Price'])
                 sql = "INSERT INTO Food SET Food_Name = %s, Restaurant_ID = %s, Price = %s"
                 mycursor.execute(sql, (request.form['Food_Name'], session['user_id'], request.form['Price']))
                 mydb.commit()
@@ -508,7 +508,6 @@ def register_page():
             error = 'Type username longer than 5 char'
         elif len(request.form['password']) < 6:
             error = 'Type password longer than 5 char'
-
         else:
             try:
                 sql = "INSERT INTO User SET Name_Surname = %s, Username = %s, Password = %s"
@@ -669,11 +668,15 @@ def update_restaurant_info():
             except:
                 mydb.rollback()
             return redirect(url_for('restaurant_detail_owner'))
-
-    sql = "SELECT * FROM Restaurant WHERE Restaurant_ID = %s "
-    mycursor.execute(sql, ( session['user_id'],))
-    restaurant_info = mycursor.fetchone()
-    return render_template('update_restaurant_info.html',restaurant_info=restaurant_info, error=error)
+    try:
+        sql = "SELECT * FROM Restaurant WHERE Restaurant_ID = %s "
+        mycursor.execute(sql, ( session['user_id'],))
+        restaurant_info = mycursor.fetchone()
+        return render_template('update_restaurant_info.html',restaurant_info=restaurant_info, error=error)
+    except:
+        error = 'Error while getting comment!'
+        mydb.rollback()
+        return render_template('update_restaurant_info.html', error=error)
 
 @login_required_user
 def edit_restaurant_comment(comment_key,restaurant_key_comment):
@@ -707,6 +710,7 @@ def edit_restaurant_comment(comment_key,restaurant_key_comment):
         return render_template('edit_comment.html',comment=comment, error=error)
     except:
         error = 'Error while getting comment!'
+        mydb.rollback()
         return render_template('edit_comment.html', error=error)
 
 @login_required_user
@@ -785,7 +789,6 @@ def update_food(food_key):
 def logout_page():
     session.clear()
     return redirect(url_for('home_page'))
-
 
 def has_this_food(foodname, restaurant_ID):
     try:
